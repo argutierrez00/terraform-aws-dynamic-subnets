@@ -41,20 +41,43 @@ resource "aws_security_group_rule" "nat_instance_ingress" {
 
 // aws --region us-west-2 ec2 describe-images --owners amazon --filters Name="name",Values="amzn-ami-vpc-nat*" Name="virtualization-type",Values="hvm"
 data "aws_ami" "nat_instance" {
-  count       = var.nat_instance_enabled ? 1 : 0
-  most_recent = true
+#   count       = var.nat_instance_enabled ? 1 : 0
+#   most_recent = true
+#
+#   filter {
+#     name   = "name"
+#     values = ["amzn-ami-vpc-nat*"]
+#   }
+#
+#   filter {
+#     name   = "virtualization-type"
+#     values = ["hvm"]
+#   }
+#
+#   owners = ["amazon"]
 
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
   filter {
     name   = "name"
-    values = ["amzn-ami-vpc-nat*"]
+    values = ["amzn2-ami-hvm-*"]
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-
-  owners = ["amazon"]
+  filter {
+    name   = "block-device-mapping.volume-type"
+    values = ["gp2"]
+  }
 }
 
 // https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html
